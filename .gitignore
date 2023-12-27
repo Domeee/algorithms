@@ -27,7 +27,7 @@
 *.lib
 
 # Executables
-algorithms
+/obj
 *.exe
 *.out
 *.app

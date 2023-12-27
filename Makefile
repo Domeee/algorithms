@@ -1,16 +1,34 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall
+SRC_DIR = src
+OBJ_DIR = obj
+EXEC = algorithms
 
-all: algorithms
+# Automatically find all cpp files in the SRC_DIR
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+# Replace .cpp with .o and prefix with OBJ_DIR
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 
-algorithms: main.o bfs.o
-	$(CXX) $(CXXFLAGS) -o algorithms main.o bfs.o
+# Default target
+all: $(EXEC)
 
-main.o: main.cpp bfs.h
-	$(CXX) $(CXXFLAGS) -c main.cpp
+# Link all object files into the final executable
+$(EXEC): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-bfs.o: bfs.cpp bfs.h
-	$(CXX) $(CXXFLAGS) -c bfs.cpp
+# Compile each cpp file into an object file
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Create the object files directory if it doesn't exist
+$(OBJECTS): | $(OBJ_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $@
+
+# Clean target to remove build artifacts
 clean:
-	rm -f *.o algorithms
+	rm -rf $(OBJ_DIR) $(EXEC)
+
+# Mark targets as phony
+.PHONY: all clean
